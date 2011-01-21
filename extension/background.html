@@ -1,0 +1,34 @@
+<html>
+<head>
+<script>
+
+  function getWebmailUrl() {
+    //TODO: Set the return value from the configuration, by now a fixed string.
+    return "https://mail.libresoft.es/";
+  }
+
+  function isWemmailUrl(url) {
+    var address = getWebmailUrl();
+    if (url.indexOf(address) != 0)
+        return false;
+
+    return url.length == address.length || url[address.length] == '?' ||
+                       url[address.length] == '#';
+  }
+
+  function openMail() {
+    chrome.tabs.getAllInWindow(undefined, function(tabs) {
+    for (var i = 0, tab; tab = tabs[i]; i++) {
+      if (tab.url && isWemmailUrl(tab.url)) {
+        chrome.tabs.update(tab.id, {selected: true});
+        return;
+      }
+    }
+    chrome.tabs.create({url: getWebmailUrl()});
+    });
+  }
+
+  chrome.browserAction.onClicked.addListener(openMail);
+</script>
+</head>
+</html>

@@ -2,10 +2,11 @@
   "name": "Roundcube extension",
   "version": "1.0",
   "description": "Extension for checking roundcube webmail.",
+  "background_page": "background.html",
   "browser_action": {
     "default_icon": "favicon.ico"
   },
   "permissions": [
-    "http://*/*"
+    "http://*/*", "tabs"
   ]
 }
