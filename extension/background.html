@@ -3,8 +3,11 @@
 <script type="text/javascript">
 
   function getWebmailUrl() {
-    //TODO: Set the return value from the configuration, by now a fixed string.
-    return "https://mail.libresoft.es/";
+    if (!localStorage.domain) {
+        return "options.html";
+    } else {
+        return "https://" + localStorage.domain;
+    }
   }
 
   function isWemmailUrl(url) {

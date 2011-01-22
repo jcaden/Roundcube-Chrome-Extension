@@ -1,0 +1,99 @@
+<html>
+<head>
+<title>Roundcube Webmail Checker - Options</title>
+<style>
+body {
+  font-family:helvetica, arial, sans-serif;
+  font-size:80%;
+  margin:10px;
+}
+
+#header {
+  padding-bottom:1.5em;
+  padding-top:1.5em;
+}
+
+#header h1 {
+  font-size: 156%;
+  display:inline;
+  padding-bottom:43px;
+  padding-left:75px;
+  padding-top:40px;
+  background:url(icon_128.png) no-repeat;
+  background-size:67px;
+  background-position:1px 18px;
+}
+
+.section-header {
+  background:#ebeff9;
+  border-top:1px solid #b5c7de;
+  font-size:99%;
+  padding:3px 0 2px 5px;
+  font-weight:bold;
+  margin-bottom:1em;
+  margin-top:4em;
+}
+
+.section-header.first {
+  margin-top:1em;
+}
+
+#custom-domain {
+  width:300px;
+  margin-left:2px;
+}
+
+#footer {
+  margin-top:4em;
+}
+</style>
+</head>
+<body>
+
+<div id="header"><h1>Roundcube Webmail Checker Options</h1></div>
+
+<div class="section-header first">Domain</div>
+<p>Please enter your server address here:
+<p>
+  https://<input type="text" id="domain" oninput="changeEntered()">
+
+<div id="footer">
+  <button id="save-button" style="font-weight:bold" onclick="save()"
+    >Save</button>
+  <button onclick="init()">Cancel</button>
+</div>
+
+<script>
+var domainTextbox;
+var saveButton;
+
+init();
+
+function init() {
+  domainTextbox = document.getElementById("domain");
+  saveButton = document.getElementById("save-button");
+
+  domainTextbox.value = localStorage.domain || "";
+  noChangeEntered();
+}
+
+function save() {
+  localStorage.domain = domainTextbox.value;
+  noChangeEntered();
+
+  //TODO Check domain
+
+  chrome.extension.getBackgroundPage().init();
+}
+
+function changeEntered() {
+  saveButton.disabled = false;
+}
+
+function noChangeEntered() {
+  saveButton.disabled = true;
+}
+
+</script>
+</body>
+</html>
