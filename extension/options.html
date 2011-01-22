@@ -53,9 +53,25 @@ body {
 <div id="header"><h1>Roundcube Webmail Checker Options</h1></div>
 
 <div class="section-header first">Domain</div>
-<p>Please enter your server address here:
+<p>Please enter your server address here: </p>
 <p>
   https://<input type="text" id="domain" oninput="changeEntered()">
+</p>
+
+<div class="section-header">Pool interval</div>
+<p>Select the time between email checkings: </
+<p>
+  <select id="frequency" onChange="changeEntered()">
+    <option value=15>15 seconds</option>
+    <option value=30>30 seconds</option>
+    <option value=60>1 minute</option>
+    <option value=300>5 minute</option>
+    <option value=600>10 minute</option>
+    <option value=900>15 minute</option>
+    <option value=1800>30 minute</option>
+    <option value=3600>1 hour</option>
+  </select>
+</p>
 
 <div id="footer">
   <button id="save-button" style="font-weight:bold" onclick="save()"
@@ -65,23 +81,43 @@ body {
 
 <script>
 var domainTextbox;
+var frequency;
 var saveButton;
 
 init();
 
 function init() {
+  var freqValue;
+
   domainTextbox = document.getElementById("domain");
   saveButton = document.getElementById("save-button");
+  frequency = document.getElementById("frequency");
 
   domainTextbox.value = localStorage.domain || "";
+
+  freqValue = localStorage.frequency;
+  if (freqValue) {
+    for (i = 0; i < frequency.options.length; i++) {
+      if (frequency.options[i].value == freqValue) {
+        frequency.selectedIndex = i;
+        break;
+      }
+    }
+  }
+
   noChangeEntered();
 }
 
 function save() {
-  localStorage.domain = domainTextbox.value;
-  noChangeEntered();
+  var freqIndex;
 
+  localStorage.domain = domainTextbox.value;
   //TODO Check domain
+
+  freqIndex = frequency.selectedIndex;
+  localStorage.frequency = frequency.options[freqIndex].value;
+
+  noChangeEntered();
 
   chrome.extension.getBackgroundPage().init();
 }

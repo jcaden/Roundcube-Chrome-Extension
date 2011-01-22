@@ -2,6 +2,9 @@
 <head>
 <script type="text/javascript">
 
+  var frequency;
+  var timeoutID;
+
   function getWebmailUrl() {
     if (!localStorage.domain) {
         return false;
@@ -38,11 +41,34 @@
     }
   }
 
+  function scheduleRequest() {
+
+    timeoutID = window.setTimeout(makeRequest, frequency * 1000);
+  }
+
+  function makeRequest() {
+    alert("Requesting");
+    scheduleRequest();
+  }
+
+  function init() {
+
+    frequency = localStorage.frequency;
+    if (!frequency)
+      frequency = 15;
+    if (timeoutID)
+      window.clearTimeout(timeoutID);
+
+    makeRequest();
+  }
+
 </script>
 </head>
 <body>
 <script type="text/javascript">
   chrome.browserAction.onClicked.addListener(openMail);
+
+  init();
 </script>
 <script type="text/javascript">
   var _gaq = _gaq || [];
