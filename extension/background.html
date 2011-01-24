@@ -4,8 +4,11 @@
 
   var frequency;
   var timeoutID;
+  var requestTimeout = 1000 * 6;  // 6 seconds
 
   function getWebmailUrl() {
+    var url;
+
     if (!localStorage.domain) {
         return false;
     } else {
@@ -41,13 +44,68 @@
     }
   }
 
-  function scheduleRequest() {
+  function getFeedUrl(mbox) {
+    var webmailUrl = getWebmailUrl();
 
+    if (!webmailUrl)
+      return false;
+
+    return webmailUrl + "?_action=plugin.rss&_mbox=" + mbox + "&" +
+                                          "_flag=unseen&"+
+                                          "_rss_truncate_body=0&" +
+                                          "_rss_truncate_body_parsing=0";
+  }
+
+  function getMailCount(){
+    //TODO: By now we only check the INBOX folder, but must be configurable
+    var xhr = new XMLHttpRequest();
+    var feedUrl = getFeedUrl("INBOX");
+    var abortTimerId = window.setTimeout(function() {
+      xhr.abort();
+    }, requestTimeout);
+
+    function handleError() {
+      console.error("TODO: Handle error properly");
+    }
+
+    try {
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState != 4)
+          return;
+
+        if (xhr.responseXML) {
+          var xmlDoc = xhr.responseXML;
+
+          console.error(xhr.responseText);
+          return;
+        }
+
+        handleError();
+      }
+
+      xhr.onerror = function(error) {
+        console.error("Error while loading feed: " + e);
+        handleError();
+      }
+
+      if (!feedUrl) {
+        handleError();
+      } else {
+        xhr.open("GET", feedUrl, true);
+        xhr.send(null);
+      }
+    } catch(e) {
+      console.error("Exception getting email", e);
+      handleError();
+    }
+  }
+
+  function scheduleRequest() {
     timeoutID = window.setTimeout(makeRequest, frequency * 1000);
   }
 
   function makeRequest() {
-    alert("Requesting");
+    getMailCount();
     scheduleRequest();
   }
 
