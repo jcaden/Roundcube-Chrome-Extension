@@ -5,6 +5,7 @@
   var frequency;
   var timeoutID;
   var requestTimeout = 1000 * 6;  // 6 seconds
+  var emailCount = 0;
 
   function getWebmailUrl() {
     var url;
@@ -68,6 +69,14 @@
       console.error("TODO: Handle error properly");
     }
 
+    function handleSuccess(count) {
+      console.error(count);
+      chrome.browserAction.setBadgeText({
+        text: count != "0" ? "" + count : ""
+      });
+      console.error("TODO: Handle success");
+    }
+
     try {
       xhr.onreadystatechange = function() {
         if (xhr.readyState != 4)
@@ -76,7 +85,14 @@
         if (xhr.responseXML) {
           var xmlDoc = xhr.responseXML;
 
-          console.error(xhr.responseText);
+          var elems = xmlDoc.getElementsByTagName("item");
+          var count = elems.length;
+          if (count == 1 &&
+                  elems[0].getElementsByTagName("guid")[0].textContent == "")
+              count = 0;
+
+          handleSuccess(count);
+
           return;
         }
 
