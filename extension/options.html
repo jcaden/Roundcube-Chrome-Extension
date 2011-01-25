@@ -110,9 +110,12 @@ function init() {
 
 function save() {
   var freqIndex;
+  var domain;
 
-  localStorage.domain = domainTextbox.value.split("?")[0];
-  //TODO Check domain
+  domain = domainTextbox.value.split("?")[0];
+  if (domain[domain.length - 1] != '/')
+    domain = domain + "/";
+  localStorage.domain = domain;
 
   freqIndex = frequency.selectedIndex;
   localStorage.frequency = frequency.options[freqIndex].value;
