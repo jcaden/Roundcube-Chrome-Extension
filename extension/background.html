@@ -66,15 +66,19 @@
     }, requestTimeout);
 
     function handleError() {
-      console.error("TODO: Handle error properly");
+      //TODO: Take more actions
+    }
+
+    function handleDomainDoesNotExist() {
+      //TODO: Notify that domain does not exist.
+      chrome.browserAction.setBadgeText({text: "..."});
     }
 
     function handleSuccess(count) {
-      console.error(count);
       chrome.browserAction.setBadgeText({
         text: count != "0" ? "" + count : ""
       });
-      console.error("TODO: Handle success");
+      // TODO: notification and/or animation on icon
     }
 
     try {
@@ -82,25 +86,38 @@
         if (xhr.readyState != 4)
           return;
 
-        if (xhr.responseXML) {
-          var xmlDoc = xhr.responseXML;
+        switch (xhr.status) {
+          case 200:
+            if (xhr.responseXML) {
+              var xmlDoc = xhr.responseXML;
 
-          var elems = xmlDoc.getElementsByTagName("item");
-          var count = elems.length;
-          if (count == 1 &&
-                  elems[0].getElementsByTagName("guid")[0].textContent == "")
-              count = 0;
+              var elems = xmlDoc.getElementsByTagName("item");
+              var count = elems.length;
+              if (count == 1 &&
+                      elems[0].getElementsByTagName("guid")[0].textContent == "")
+                  count = 0;
 
-          handleSuccess(count);
+              handleSuccess(count);
 
-          return;
+              return;
+            }
+            break;
+          case 404:
+            handleDomainDoesNotExist();
+            break;
+          case 401:
+          case 403:
+            //TODO: Notify that user should log in
+            chrome.browserAction.setBadgeText({text: "!"});
+            break;
         }
 
         handleError();
       }
 
       xhr.onerror = function(error) {
-        console.error("Error while loading feed: " + e);
+        handleDomainDoesNotExist();
+
         handleError();
       }
 
