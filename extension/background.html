@@ -8,6 +8,8 @@
   var emailCount = 0;
   var errorCount = 0;
   var maxError = 3; // Maximum error 3
+  var lastCount = 0;
+  var popUpTime = 5000;
 
   function getWebmailUrl() {
     var url;
@@ -73,24 +75,58 @@
 
     function handleDomainDoesNotExist() {
       errorCount++;
-      if (errorCount > maxError)
-        //TODO: Notify that domain does not exist.
+      if (errorCount == maxError){
+        var notification = webkitNotifications.createNotification(
+                                    chrome.extension.getURL(
+                                              "icons/roundcube_icon_128.png"),
+                                    "Domain does not exist",
+                                    "An error ocurred while connecting to the" +
+                                    " server, please configure it "+
+                                    "correctly at options page.");
+        notification.show();
         chrome.browserAction.setBadgeText({text: "..."});
+        window.setTimeout(function() {
+              notification.cancel();
+        }, popUpTime);
+      }
     }
 
     function handleNotLoggedError() {
       errorCount++;
-      if (errorCount > maxError)
-        //TODO: Notify that user should log in
+      if (errorCount == maxError)
+        var notification = webkitNotifications.createNotification(
+                                    chrome.extension.getURL(
+                                              "icons/roundcube_icon_128.png"),
+                                    "User is not logged in",
+                                    "Please log in in your roundcube server.");
+        notification.show();
+        chrome.browserAction.setBadgeText({text: "..."});
+        window.setTimeout(function() {
+              notification.cancel();
+        }, popUpTime);
         chrome.browserAction.setBadgeText({text: "!"});
     }
 
     function handleSuccess(count) {
       errorCount = 0;
-      chrome.browserAction.setBadgeText({
-        text: count != "0" ? "" + count : ""
-      });
-      // TODO: notification and/or animation on icon
+      if (count != lastCount) {
+        chrome.browserAction.setBadgeText({
+          text: count != "0" ? "" + count : ""
+        });
+        //TODO: Review following condition
+        if (count != 0 && count > lastCount) {
+          var notification = webkitNotifications.createNotification(
+                                      chrome.extension.getURL(
+                                                "icons/roundcube_icon_128.png"),
+                                      "You have new mail",
+                                      "You have received a new emal.");
+          notification.show();
+          window.setTimeout(function() {
+                notification.cancel();
+          }, popUpTime);
+        }
+        lastCount = count;
+      }
     }
 
     try {
