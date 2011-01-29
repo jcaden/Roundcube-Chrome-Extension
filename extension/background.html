@@ -6,6 +6,8 @@
   var timeoutID;
   var requestTimeout = 1000 * 6;  // 6 seconds
   var emailCount = 0;
+  var errorCount = 0;
+  var maxError = 3; // Maximum error 3
 
   function getWebmailUrl() {
     var url;
@@ -70,11 +72,21 @@
     }
 
     function handleDomainDoesNotExist() {
-      //TODO: Notify that domain does not exist.
-      chrome.browserAction.setBadgeText({text: "..."});
+      errorCount++;
+      if (errorCount > maxError)
+        //TODO: Notify that domain does not exist.
+        chrome.browserAction.setBadgeText({text: "..."});
+    }
+
+    function handleNotLoggedError() {
+      errorCount++;
+      if (errorCount > maxError)
+        //TODO: Notify that user should log in
+        chrome.browserAction.setBadgeText({text: "!"});
     }
 
     function handleSuccess(count) {
+      errorCount = 0;
       chrome.browserAction.setBadgeText({
         text: count != "0" ? "" + count : ""
       });
@@ -107,8 +119,7 @@
             break;
           case 401:
           case 403:
-            //TODO: Notify that user should log in
-            chrome.browserAction.setBadgeText({text: "!"});
+            handleNotLoggedError();
             break;
         }
 
