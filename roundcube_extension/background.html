@@ -84,7 +84,6 @@ This file is part of Roundcube Chrome Extension.
     /* Only notify if is requested */
     if (!doNotifications)
       return;
-
     var notification = webkitNotifications.createNotification(
                                chrome.extension.getURL(
                                               "icons/roundcube_icon_128.png"),
@@ -212,6 +211,8 @@ This file is part of Roundcube Chrome Extension.
       frequency = 15;
     if (timeoutID)
       window.clearTimeout(timeoutID);
+
+    doNotifications = localStorage.enableNotif == "true";
 
     makeRequest();
   }

@@ -37,7 +37,7 @@ body {
   padding-bottom:43px;
   padding-left:75px;
   padding-top:40px;
-  background:url(icon_128.png) no-repeat;
+  background:url("icons/roundcube_icon_128.png") no-repeat;
   background-size:67px;
   background-position:1px 18px;
 }
@@ -91,6 +91,12 @@ body {
   </select>
 </p>
 
+<div class="section-header">Notifications</div>
+<p>Enable pop-up notifications:
+
+  <input type="checkbox" id="notifications" onChange="changeEntered()" />
+</p>
+
 <div id="footer">
   <button id="save-button" style="font-weight:bold" onclick="save()"
     >Save</button>
@@ -110,6 +116,7 @@ function init() {
   domainTextbox = document.getElementById("domain");
   saveButton = document.getElementById("save-button");
   frequency = document.getElementById("frequency");
+  enableNotif = document.getElementById("notifications");
 
   domainTextbox.value = localStorage.domain || "";
 
@@ -122,6 +129,8 @@ function init() {
       }
     }
   }
+
+  enableNotif.checked = localStorage.enableNotif == "true";
 
   noChangeEntered();
 }
@@ -137,6 +146,8 @@ function save() {
 
   freqIndex = frequency.selectedIndex;
   localStorage.frequency = frequency.options[freqIndex].value;
+
+  localStorage.enableNotif = enableNotif.checked;
 
   noChangeEntered();
 
